@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html lang="es"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Hinojosa Packaging | Sorteo de Navidad SAP</title> <script src="https://cdn.tailwindcss.com"></script> <script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"; import { getDatabase, ref, set, get, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // ==========================================
+    // ⚙️ CONFIGURACIÓN OBLIGATORIA
+    // PEGA AQUÍ TU CONFIGURACIÓN DE FIREBASE
+    // ==========================================
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBViFxh-JQio660U2_e_ASjVSHW45oa7oU",
+  authDomain: "sorteo-hinojosa.firebaseapp.com",
+  databaseURL: "https://sorteo-hinojosa-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "sorteo-hinojosa",
+  storageBucket: "sorteo-hinojosa.firebasestorage.app",
+  messagingSenderId: "182974610246",
+  appId: "1:182974610246:web:e4abcfe4d6791c2f668347",
+  measurementId: "G-63YGMJXGG5"
+};
+    // ==========================================
+
+    // Inicializar Firebase
+    let app, db;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        console.log("Firebase conectado");
+    } catch (e) {
+        console.error("Error conectando Firebase. ¿Has pegado la config?", e);
+        alert("⚠️ FALTA CONFIGURACIÓN: Edita el index.html y pon tus credenciales de Firebase.");
+    }
+
+    // --- REFERENCIAS DOM ---
+    const userListEl = document.getElementById('user-list');
+    const gridEl = document.getElementById('grid-container');
+    const statusEl = document.getElementById('status-text');
+
+    // --- DATOS GLOBALES ---
+    const teamMembers = [
+        "Luis Escrivá", "Nuria Lorenzo", "Ramiro Aguir", "Victor Manuel",
+        "Alba Manrique", "Alfredo Garcia", "Andrea Sánchez", 
+        "Carlos Asenjo", "Eduardo Peris", "Francisco Cardona", "Juan Vicente"
+    ];
+    
+    // Premios Chorras
+    const gagPrizes = [
+        { title: "Tour Pata Coja", desc: "Vuelta a la oficina a la pata coja.", icon: "🦵" },
+        { title: "Error ST22", desc: "Traes cafés mañana.", icon: "☕" },
+        { title: "Licencia SAP", desc: "Un aplauso lento del equipo.", icon: "👏" },
+        { title: "Transporte Fallido", desc: "Cuenta un chiste malo.", icon: "🚛" },
+        { title: "Bucle Infinito", desc: "Repite 'SAP es mi pasión' 10 veces.", icon: "♾️" },
+        { title: "Usuario Bloqueado", desc: "Congelado 1 minuto.", icon: "❄️" },
+        { title: "Ticket Jira", desc: "Has ganado... nada.", icon: "🎫" },
+        { title: "Debug Prod", desc: "Confiesa tu mayor error.", icon: "🐞" },
+        { title: "Excel Macros", desc: "Imita teclear enfadado.", icon: "⌨️" },
+        { title: "Reinicio", desc: "5 Sentadillas.", icon: "🏋️" }
+    ];
+
+    let currentUser = null; // Usuario que "soy yo" en este navegador
+
+    // --- LÓGICA PRINCIPAL ---
+
+    // 1. Cargar estado inicial o crear juego si no existe
+    async function initGame() {
+        if(!db) return;
+        const boxesRef = ref(db, 'boxes');
+        const usersRef = ref(db, 'users');
+        
+        const snapshot = await get(boxesRef);
+
+        if (!snapshot.exists()) {
+            // PRIMERA VEZ: Crear cajas y premios aleatorios
+            console.log("Inicializando BBDD por primera vez...");
+            const totalBoxes = 12;
+            let newBoxes = [];
+            let prizesArray = Array(totalBoxes).fill(null);
+            
+            // Poner 2 cavas
+            let placed = 0;
+            while (placed < 2) {
+                let idx = Math.floor(Math.random() * totalBoxes);
+                if (prizesArray[idx] === null) {
+                    prizesArray[idx] = { type: 'CAVA', title: "¡PREMIO GORDO!", desc: "Botella de Cava Hinojosa.", icon: "🍾" };
+                    placed++;
+                }
+            }
+            // Rellenar resto
+            for(let i=0; i<totalBoxes; i++) {
+                if(prizesArray[i] === null) {
+                    const gag = gagPrizes[Math.floor(Math.random() * gagPrizes.length)];
+                    prizesArray[i] = { type: 'GAG', ...gag };
+                }
+                newBoxes.push({
+                    id: i,
+                    opened: false,
+                    openedBy: "",
+                    prize: prizesArray[i]
+                });
+            }
+            
+            await set(boxesRef, newBoxes);
+            
+            // Inicializar usuarios
+            let usersObj = {};
+            teamMembers.forEach(m => usersObj[btoa(m)] = { name: m, played: false }); // btoa para key segura
+            await set(usersRef, usersObj);
+        }
+
+        // ESCUCHAR CAMBIOS (Realtime)
+        onValue(boxesRef, (snap) => {
+            const boxes = snap.val();
+            renderBoxes(boxes);
+            checkBottles(boxes);
+        });
+
+        onValue(usersRef, (snap) => {
+            const users = snap.val();
+            renderUsers(users);
+        });
+    }
+
+    // --- RENDERIZADO ---
+
+    function renderUsers(users) {
+        userListEl.innerHTML = '';
+        
+        // Selector de "Quién soy" (Solo si no he elegido aún)
+        const whoAmISelect = document.getElementById('who-am-i');
+        if (whoAmISelect.options.length <= 1) {
+             Object.values(users).forEach(u => {
+                if(!u.played) {
+                    const opt = document.createElement('option');
+                    opt.value = u.name;
+                    opt.innerText = u.name;
+                    whoAmISelect.appendChild(opt);
+                }
+             });
+        }
+
+        // Lista visual
+        Object.values(users).forEach(u => {
+            const div = document.createElement('div');
+            div.className = `p-3 mb-2 rounded border-l-4 flex justify-between items-center transition-all ${u.played ? 'bg-gray-100 border-gray-400 text-gray-400' : 'bg-white border-[#003366] shadow-sm'}`;
+            div.innerHTML = `
+                <span class="font-bold text-sm">${u.name}</span>
+                <span class="text-xs">${u.played ? 'JUGADO' : 'PENDIENTE'}</span>
+            `;
+            userListEl.appendChild(div);
+        });
+    }
+
+    function renderBoxes(boxes) {
+        gridEl.innerHTML = '';
+        boxes.forEach((box, idx) => {
+            const div = document.createElement('div');
+            
+            // Estilo base
+            let baseClass = "h-32 rounded-lg relative cursor-pointer transition-all duration-300 transform shadow-lg flex flex-col items-center justify-center border-2";
+            
+            if (box.opened) {
+                // ABIERTA
+                const isCava = box.prize.type === 'CAVA';
+                div.className = `${baseClass} ${isCava ? 'bg-green-100 border-green-500' : 'bg-gray-200 border-gray-400'}`;
+                div.innerHTML = `
+                    <div class="text-4xl mb-1">${box.prize.icon}</div>
+                    <div class="text-xs font-bold text-center px-2 leading-tight ${isCava ? 'text-green-800' : 'text-gray-600'}">${box.openedBy}</div>
+                `;
+            } else {
+                // CERRADA
+                div.className = `${baseClass} bg-[#003366] border-[#002244] hover:scale-105 hover:bg-[#004080] group`;
+                div.onclick = () => handleBoxClick(idx, box);
+                div.innerHTML = `
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-4xl font-mono font-bold text-white opacity-80 group-hover:opacity-100">${idx + 1}</span>
+                    </div>
+                    <div class="absolute top-2 right-2 text-white opacity-20"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg></div>
+                `;
+            }
+            gridEl.appendChild(div);
+        });
+    }
+
+    function checkBottles(boxes) {
+        const found = boxes.filter(b => b.opened && b.prize.type === 'CAVA').length;
+        document.getElementById('bottles-count').innerText = `${2 - found} / 2`;
+    }
+
+    // --- INTERACCIÓN ---
+
+    // Configurar "Quién soy"
+    window.setIdentity = function(name) {
+        if(!name) return;
+        currentUser = name;
+        statusEl.innerText = `Hola, ${name}. Elige una caja.`;
+        document.getElementById('identity-overlay').classList.add('hidden');
+    }
+
+    async function handleBoxClick(idx, box) {
+        if (!currentUser) {
+            alert("Por favor, selecciona tu nombre en el menú superior o recarga si ya jugaste.");
+            return;
+        }
+        if (box.opened) return;
+
+        // Confirmación simple
+        if(!confirm(`¿Seguro que quieres abrir la caja ${idx+1}?`)) return;
+
+        // 1. Actualizar Caja en Firebase
+        const boxRef = ref(db, `boxes/${idx}`);
+        await update(boxRef, {
+            opened: true,
+            openedBy: currentUser
+        });
+
+        // 2. Actualizar Usuario en Firebase
+        const userKey = btoa(currentUser);
+        const userRef = ref(db, `users/${userKey}`);
+        await update(userRef, { played: true });
+
+        // 3. Mostrar Modal (Local, la DB ya notificará a los demás)
+        showModal(box.prize);
+        
+        // Reset local identity to prevent double play
+        currentUser = null;
+        statusEl.innerText = "Juego terminado. Gracias por participar.";
+    }
+
+    // Modal
+    function showModal(prize) {
+        const modal = document.getElementById('result-modal');
+        document.getElementById('modal-icon').innerText = prize.icon;
+        document.getElementById('modal-title').innerText = prize.type === 'CAVA' ? "¡PREMIO!" : "¡VAYA...";
+        document.getElementById('modal-title').className = prize.type === 'CAVA' ? "text-3xl font-bold text-green-600 mb-2" : "text-3xl font-bold text-gray-700 mb-2";
+        document.getElementById('modal-msg').innerText = prize.title;
+        document.getElementById('modal-desc').innerText = prize.desc;
+        modal.classList.remove('hidden');
+        
+        // Confeti si es Cava
+        if(prize.type === 'CAVA') startConfetti();
+    }
+
+    window.closeModal = function() {
+        document.getElementById('result-modal').classList.add('hidden');
+        location.reload(); // Recargar para limpiar estado local del usuario
+    }
+
+    // Arrancar
+    initGame();
+
+    // Confetti simple script
+    function startConfetti() {
+        // (Efecto visual opcional simplificado)
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => document.body.style.overflow = 'auto', 3000);
+    }
+
+</script>
+<style>
+    @import url('[https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap)');
+    body { font-family: 'Montserrat', sans-serif; background-color: #f3f4f6; }
+    .hinojosa-blue { background-color: #003366; }
+    .hinojosa-text { color: #003366; }
+</style>
+</head> <body class="flex flex-col h-screen">
+
+<header class="hinojosa-blue text-white shadow-md p-4 flex justify-between items-center z-10">
+    <div class="flex items-center gap-4">
+        <div class="flex flex-col leading-none">
+            <span class="font-bold text-xl tracking-wide">Hinojosa</span>
+            <span class="text-xs text-gray-300 font-light tracking-widest">PACKAGING GROUP</span>
+        </div>
+        <div class="h-8 w-px bg-white opacity-30 mx-2"></div>
+        <h1 class="font-light text-lg hidden md:block">Departamento SAP | Christmas Raffle</h1>
+    </div>
+    <div class="text-right">
+        <div class="text-xs text-gray-300 uppercase tracking-wider">Botellas Restantes</div>
+        <div id="bottles-count" class="text-2xl font-bold text-yellow-400">2 / 2</div>
+    </div>
+</header>
+
+<div class="flex flex-1 overflow-hidden">
+    
+    <aside class="w-72 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
+        <div class="p-4 bg-gray-50 border-b border-gray-200">
+            <h2 class="hinojosa-text font-bold text-sm uppercase">Equipo SAP</h2>
+            <p class="text-xs text-gray-500">Estado de participación</p>
+        </div>
+        <div id="user-list" class="flex-1 overflow-y-auto p-4">
+            <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-4 py-1">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-4 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 relative bg-gray-100 p-6 flex flex-col items-center justify-center">
+        
+        <div class="mb-8 text-center">
+            <h2 class="text-2xl font-bold hinojosa-text mb-2">Selecciona tu "Transport Request"</h2>
+            <p id="status-text" class="text-gray-600">Conectando con el servidor...</p>
+        </div>
+
+        <div id="grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-5xl">
+            </div>
+
+        <div class="md:hidden mt-8 text-xs text-gray-400">
+            Lista de participantes oculta en móvil.
+        </div>
+    </main>
+</div>
+
+<div id="identity-overlay" class="fixed inset-0 bg-[#003366] bg-opacity-95 z-50 flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full text-center">
+        <h3 class="text-2xl font-bold hinojosa-text mb-4">Bienvenido al Sorteo</h3>
+        <p class="mb-6 text-gray-600">Por favor, identifícate para poder abrir una caja y registrar tu resultado en la nube.</p>
+        
+        <select id="who-am-i" class="w-full p-3 border border-gray-300 rounded mb-6 text-lg bg-gray-50">
+            <option value="" disabled selected>-- Selecciona tu nombre --</option>
+            </select>
+        
+        <button onclick="setIdentity(document.getElementById('who-am-i').value)" class="w-full bg-[#003366] text-white font-bold py-3 px-6 rounded hover:bg-[#002244] transition">
+            ENTRAR AL SORTEO
+        </button>
+    </div>
+</div>
+
+<div id="result-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden transform transition-all scale-100">
+        <div class="h-2 bg-[#003366]"></div>
+        <div class="p-8 text-center">
+            <div id="modal-icon" class="text-6xl mb-4">🎁</div>
+            <h2 id="modal-title" class="text-3xl font-bold mb-2">Título</h2>
+            <p id="modal-msg" class="text-xl font-medium text-gray-800 mb-2">Mensaje</p>
+            <p id="modal-desc" class="text-gray-500 italic mb-6">Descripción del castigo o premio.</p>
+            
+            <button onclick="closeModal()" class="bg-[#003366] text-white font-bold py-2 px-8 rounded-full hover:bg-blue-900 transition shadow-lg">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>
+</body> </html>
