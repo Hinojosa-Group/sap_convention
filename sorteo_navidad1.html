@@ -66,13 +66,13 @@
             alert("⚠️ Error conectando con Firebase. Revisa la consola.");
         }
 
-        // --- EQUIPO ACTUALIZADO (Con Juanvi) ---
+        // --- LISTA DEFINITIVA (9 Personas) ---
         const teamMembers = [
-            "Luis", "Miguel", "Charly", "Victor", 
-            "Alfredo", "Joan", "Miguel (Jr)", "Jose", "Juanvi"
+            "Carlos", "Luis", "Miguel", "Charly", "Victor", 
+            "Alfredo", "Joan", "Jose", "Juanvi"
         ];
         
-        // --- PREMIOS (VINO) Y CASTIGOS (OFICINA) ---
+        // --- PREMIOS (VINO) Y CASTIGOS ---
         const gagPrizes = [
             { title: "Escalera al Cielo", desc: "Sube un tramo de escaleras (o da una vuelta a la sala) a la pata coja.", icon: "🦵" },
             { title: "El Discurso del Rey", desc: "Te toca hacer el primer brindis en la comida de hoy.", icon: "🥂" },
@@ -86,7 +86,8 @@
             { title: "Bailando con Lobos", desc: "Haz un paso de baile (tipo Fortnite o Macarena) en el centro.", icon: "💃" }
         ];
 
-        let currentUser = null;
+        let currentUserKey = null;
+        let globalUsers = {};
 
         async function initGame() {
             if(!db) return;
@@ -95,10 +96,8 @@
             
             const snapshot = await get(boxesRef);
 
-            // Si no hay datos (o se ha reseteado), creamos la partida nueva
             if (!snapshot.exists()) {
-                console.log("Creando sorteo de vinos...");
-                // Usamos 12 cajas para 9 usuarios (sobran 3 cajas vacías/extra)
+                console.log("Creando sorteo...");
                 const totalBoxes = 12; 
                 let newBoxes = [];
                 let prizesArray = Array(totalBoxes).fill(null);
@@ -112,7 +111,7 @@
                         placed++;
                     }
                 }
-                // 2. Rellenar el resto con pruebas graciosas
+                // 2. Rellenar el resto
                 for(let i=0; i<totalBoxes; i++) {
                     if(prizesArray[i] === null) {
                         const gag = gagPrizes[Math.floor(Math.random() * gagPrizes.length)];
@@ -125,7 +124,9 @@
                 
                 // 3. Inicializar usuarios
                 let usersObj = {};
-                teamMembers.forEach(m => usersObj[btoa(encodeURIComponent(m))] = { name: m, played: false });
+                teamMembers.forEach((m, i) => {
+                    usersObj[`user_${i}`] = { name: m, played: false };
+                });
                 await set(usersRef, usersObj);
             }
 
@@ -140,7 +141,10 @@
 
             onValue(usersRef, (snap) => {
                 const data = snap.val();
-                if (data) renderUsers(data);
+                if (data) {
+                    globalUsers = data;
+                    renderUsers(data);
+                }
             });
         }
 
@@ -149,21 +153,21 @@
             const select = document.getElementById('who-am-i');
             
             list.innerHTML = '';
-            const usersArray = Object.values(users);
+            const usersArray = Object.entries(users);
 
             // Rellenar select solo si hace falta
             if (select.options.length <= 1) {
-                 usersArray.forEach(u => {
+                 usersArray.forEach(([key, u]) => {
                     if(!u.played) {
                         const opt = document.createElement('option');
-                        opt.value = u.name;
+                        opt.value = key; 
                         opt.innerText = u.name;
                         select.appendChild(opt);
                     }
                  });
             }
 
-            usersArray.forEach(u => {
+            usersArray.forEach(([key, u]) => {
                 const div = document.createElement('div');
                 div.className = `p-3 mb-2 rounded border-l-4 flex justify-between items-center text-sm ${u.played ? 'bg-gray-100 border-gray-300 text-gray-400' : 'bg-white border-hinojosa shadow-sm'}`;
                 div.innerHTML = `
@@ -205,15 +209,16 @@
             document.getElementById('bottles-count').innerText = `${2 - found} / 2`;
         }
 
-        window.setIdentity = function(name) {
-            if(!name) return;
-            currentUser = name;
+        window.setIdentity = function(key) {
+            if(!key) return;
+            currentUserKey = key; 
+            const name = globalUsers[key].name;
             document.getElementById('status-bar').innerText = `Jugador: ${name}`;
             document.getElementById('identity-overlay').classList.add('hidden');
         }
 
         async function handleBoxClick(idx, box) {
-            if (!currentUser) {
+            if (!currentUserKey) {
                 alert("Identifícate primero.");
                 return;
             }
@@ -221,10 +226,12 @@
 
             if(!confirm(`¿Seguro que abres la caja ${idx+1}?`)) return;
 
+            const userName = globalUsers[currentUserKey].name;
+
             const updates = {};
             updates[`boxes/${idx}/opened`] = true;
-            updates[`boxes/${idx}/openedBy`] = currentUser;
-            updates[`users/${btoa(encodeURIComponent(currentUser))}/played`] = true;
+            updates[`boxes/${idx}/openedBy`] = userName;
+            updates[`users/${currentUserKey}/played`] = true;
 
             await update(ref(db), updates);
             showModal(box.prize);
