@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Detalle Técnico: SDK ABAP & GCS Content Repository ⚡</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-color: #080810;
+            --panel-bg: #111122;
+            --text-color: #e0e0f0;
+            --cyber-cyan: #00f0ff;
+            --cyber-magenta: #bd00ff;
+            --cyber-yellow: #ffb700;
+            --border-glow: 0 0 10px rgba(0, 240, 255, 0.3);
+            --border-glow-heavy: 0 0 20px rgba(189, 0, 255, 0.6);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(circle at 50% 50%, #15152a 0%, #080810 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #121225 0%, #090915 100%);
+            border-bottom: 2px solid var(--cyber-magenta);
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 30px rgba(189, 0, 255, 0.2);
+            position: relative;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyber-magenta), var(--cyber-cyan), var(--cyber-yellow));
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 0 10px var(--cyber-magenta), 0 0 20px var(--cyber-cyan);
+        }
+
+        .subtitle {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1em;
+            color: var(--cyber-magenta);
+            margin-top: 10px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(189, 0, 255, 0.2);
+            box-shadow: var(--border-glow);
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyber-cyan);
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+
+        .tech-list {
+            margin: 25px 0;
+            padding-left: 20px;
+        }
+
+        .tech-list li {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .tech-list strong {
+            color: var(--cyber-yellow);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--cyber-cyan);
+            text-decoration: none;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: bold;
+            background: rgba(0, 240, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 1px solid var(--cyber-cyan);
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            transform: translateX(-5px);
+        }
+
+        .code-box {
+            background: #0d0d18;
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--cyber-green);
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #7f8c8d;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📖 SDK ABAP para Cloud Storage 📖</h1>
+        <div class="subtitle">Detalles de Implementación como Content Repository SAP ArchiveLink</div>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>⚙️ Sustitución del Content Server Tradicional</h2>
+            <p>La integración certificada permite que <strong>Google Cloud Storage (GCS)</strong> actúe directamente como un repositorio oficial de contenido de SAP bajo el estándar de <strong>SAP ArchiveLink</strong>.</p>
+            <p>Esto se logra mediante la instalación y configuración del <strong>SDK de Google Cloud para ABAP</strong> directamente en el servidor de SAP (S/4HANA o NetWeaver), eliminando servidores intermedios de bases de datos y middleware de terceros (como OpenText o servidores KPro locales).</p>
+            
+            <p>A continuación se detallan los aspectos clave de esta arquitectura técnica:</p>
+
+            <ul class="tech-list">
+                <li><strong>Comunicación Nativa y Certificada:</strong> SAP realiza peticiones HTTP directas hacia las APIs REST de Google Cloud Storage utilizando protocolos HTTPS cifrados e integrados en el Kernel de SAP (con la transacción <code>OAC0</code>).</li>
+                <li><strong>Autenticación Segura (OAuth 2.0):</strong> El SDK de ABAP gestiona la obtención, refresco y almacenamiento seguro de los tokens de acceso utilizando perfiles de autenticación en la transacción <code>/GOOG/CLIENT_KEY</code>, securizados a través del Almacenamiento Seguro (Secure Storage) de SAP.</li>
+                <li><strong>Cumplimiento de ArchiveLink:</strong> Soporta todas las operaciones estándares del protocolo ArchiveLink (creación, lectura, borrado y modificación de objetos) mapeando de forma automática las llamadas RFC de SAP a peticiones HTTPS REST en GCS.</li>
+                <li><strong>Ahorro de Costes e Infraestructura:</strong> Elimina las licencias y el coste operativo de mantener bases de datos relacionales dedicadas únicamente a adjuntos. Se paga estrictamente por gigabyte almacenado en GCS con una durabilidad del 99.999999999% (11 nueves).</li>
+            </ul>
+
+            <h2>💻 Transacciones Clave de Configuración en SAP</h2>
+            <p>Para la puesta en marcha de esta solución, se configuran las siguientes transacciones en el backend de SAP:</p>
+            <div class="code-box">
+* /GOOG/SDK_IMG    - Guía de Configuración e Implementación del SDK de Google Cloud
+* /GOOG/CLIENT_KEY - Registro seguro de la cuenta de servicio y alcances (scopes) OAuth
+* OAC0             - Definición del Content Repository de SAP (Tipo: HTTP Content Server)
+* OAC3             - Enlace de los tipos de documento y objetos de negocio con el repositorio
+            </div>
+
+            <p>Para acceder a la guía de despliegue oficial paso a paso de Google Cloud y ver todos los requisitos de red (puertos, certificados SSL/TLS y configuración de red local u on-premises), podéis consultar directamente el manual técnico:</p>
+            
+            <p style="text-align: center; margin-top: 25px;">
+                <a href="https://docs.cloud.google.com/sap/docs/abap-sdk/on-premises-or-any-cloud/latest/implement-gcs-sap-content-repository" class="tech-link" target="_blank">
+                    🌐 Guía Oficial de Google Cloud: GCS como SAP Content Repository ➔
+                </a>
+            </p>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <a href="index.html" class="back-btn">⬅️ Volver a la Presentación Principal</a>
+        </p>
+    </main>
+
+    <footer>
+        <div>Hinojosa Packaging Group &copy; 2026 - Conectados al Futuro de GCS</div>
+    </footer>
+
+</body>
+</html>
