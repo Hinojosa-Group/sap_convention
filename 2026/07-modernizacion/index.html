@@ -437,14 +437,14 @@
             <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 20px 0;">
                 <div class="mermaid">
                     graph TD
-                        A[📄 Entrada de Documentos] -->|PDFs / Escaneos| B(⚙️ Motor de Ingestión)
-                        B -->|1. Clasificación| C{¿Es Válido?}
-                        C -->|No| D[⚠️ Bandeja de Errores SAP]
-                        C -->|Sí| E[☁️ Almacenamiento GCS]
+                        A["📄 Entrada de Documentos"] -->|PDFs / Escaneos| B("⚙️ Motor de Ingestión")
+                        B -->|1. Clasificación| C{"¿Es Válido?"}
+                        C -->|No| D["⚠️ Bandeja de Errores SAP"]
+                        C -->|Sí| E["☁️ Almacenamiento GCS"]
                         
-                        E -->|2. Identificador Único| F(⚡ GOS-Buster / zarchivelink_export)
-                        F -->|3. Actualización de Enlaces| G[(🗄️ Tablas SAP: TOA01/GOS)]
-                        G -->|4. Visualización| H[🖥️ Transacciones Estándar SAP]
+                        E -->|2. Identificador Único| F("⚡ GOS-Buster / zarchivelink_export")
+                        F -->|3. Actualización de Enlaces| G[("🗄️ Tablas SAP: TOA01/GOS")]
+                        G -->|4. Visualización| H["🖥️ Transacciones Estándar SAP"]
                 </div>
             </div>
         </div>
