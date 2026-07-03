@@ -399,59 +399,7 @@
                 </div>
             </div>
 
-            <h3>Anexo 1: Publicación y Verificación de Accesibilidad</h3>
-            <p>Para asegurar que los documentos estén listos y disponibles públicamente para los usuarios en el GOS de SAP sin comprometer la seguridad de las credenciales de nuestro bucket, el componente <strong>LikpHandler</strong> ejecuta el siguiente flujo transaccional y robusto:</p>
 
-            <!-- Mermaid Sequence Diagram -->
-            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 20px 0;">
-                <div class="mermaid">
-                    sequenceDiagram
-                        autonumber
-                        participant H as LikpHandler (Ingestion)
-                        participant GCS as Cloud Storage (Bucket)
-                        participant AH as API Hub (Viewer Service)
-
-                        Note over H: Documento validado en SAP.<br/>Nombre final: {centro}_{doc_num}_{entropia}.pdf
-
-                        H->>GCS: move_file(20.processing/..., 30.ready/...)
-                        GCS-->>H: Confirmación de reubicación exitosa
-
-                        Note over H: Construye url_final:<br/>{IS_VIEWER_SERVICE}?folder={tipo}&file={nombre}
-
-                        H->>AH: check_url_accessibility(url_final) [HTTP GET]
-                        activate AH
-
-                        AH->>GCS: Autentica y solicita objeto en '30.ready/{folder}/{file}'
-                        GCS-->>AH: Retorna stream de bytes del PDF
-
-                        AH-->>H: Respuesta HTTP 200 OK (Contenido disponible)
-                        deactivate AH
-
-                        Note over H: Éxito: Procede a adjuntar<br/>la URL y el binario en SAP GOS
-                </div>
-            </div>
-
-            <p><strong>Detalle Técnico de los Pasos:</strong></p>
-            <ul class="step-list">
-                <li class="step-item">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <strong>Persistencia Definitiva (30.ready):</strong> El archivo PDF es movido desde el espacio temporal `20.processing/` a su ubicación inmutable en `30.ready/{tipo_documento}/...` renombrado con un identificador unificado y una entropía de seguridad criptográfica.
-                    </div>
-                </li>
-                <li class="step-item">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <strong>Construcción de URL del Visor:</strong> Se genera una URL federada de API Hub (`IS_VIEWER_SERVICE`) en lugar de apuntar directamente al bucket de Google Cloud. Esto actúa como un proxy desacoplado que no expone la estructura interna de almacenamiento.
-                    </div>
-                </li>
-                <li class="step-item">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <strong>Validación de Accesibilidad (Health Check):</strong> LikpHandler realiza un GET simulando al usuario final. API Hub se conecta mediante Service Account a GCS, descarga el binario en memoria y lo transmite. Si el HTTP status es 200, se confirma que la accesibilidad es correcta y se procede a enlazarse en el GOS de SAP.
-                    </div>
-                </li>
-            </ul>
         </div>
 
         <!-- TAB 3: INGESTIÓN Y GOS-BUSTER -->
@@ -480,6 +428,24 @@
                     <li><strong>Visualización Integrada:</strong> Acceso inmediato a los documentos adjuntos directamente desde las transacciones estándar de SAP.</li>
                     <li><strong>Gestión de Excepciones:</strong> Panel centralizado para monitorizar y resolver errores de clasificación de documentos de forma ágil.</li>
                 </ul>
+            </div>
+
+            <h3>ANEXO: FLUJO DE INGESTIÓN Y ENLACE GOS-BUSTER</h3>
+            <p>El procesamiento automático de documentos entrantes y su posterior vinculación y accesibilidad directa desde las transacciones de SAP sigue un flujo desacoplado y de alto rendimiento:</p>
+
+            <!-- Mermaid Flowchart Diagram -->
+            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 20px 0;">
+                <div class="mermaid">
+                    graph TD
+                        A[📄 Entrada de Documentos] -->|PDFs / Escaneos| B(⚙️ Motor de Ingestión)
+                        B -->|1. Clasificación| C{¿Es Válido?}
+                        C -->|No| D[⚠️ Bandeja de Errores SAP]
+                        C -->|Sí| E[☁️ Almacenamiento GCS]
+                        
+                        E -->|2. Identificador Único| F(⚡ GOS-Buster / zarchivelink_export)
+                        F -->|3. Actualización de Enlaces| G[(🗄️ Tablas SAP: TOA01/GOS)]
+                        G -->|4. Visualización| H[🖥️ Transacciones Estándar SAP]
+                </div>
             </div>
         </div>
 
@@ -563,7 +529,7 @@
         <!-- Footer Line -->
         <div class="footer-line"></div>
         <div class="footer-text">
-            🤖 LISA • ASISTENTE DE ALFREDO • HINOJOSA PACKAGING GROUP 2026<br/>
+            🤖 DOCUMENTO INTERNO AREA SAP • HINOJOSA PACKAGING GROUP 2026<br/>
             <span style="font-size: 0.75rem; color: #999;">"Modernización tecnológica y eficiencia operativa al servicio del negocio."</span>
         </div>
 
