@@ -367,16 +367,16 @@
             <p>Presentamos la arquitectura de modernización de nuestra plataforma de aplicaciones de negocio. Iniciamos una nueva etapa de integración y digitalización con el tándem de productividad SAP + Google Cloud. Esta arquitectura robusta y escalable está respaldada por los servicios corporativos de la nube de Google.</p>
             
             <div class="highlight-box">
-                <h4>Sinergia Tecnológica: SAP Rise + Integration Suite + Google Cloud</h4>
+                <h4>Sinergia Tecnológica y Valor de Negocio: SAP + Google Cloud</h4>
                 <p>Nuestra infraestructura habilita un abanico de posibilidades avanzadas de integración:</p>
                 <ul class="custom-bullets">
-                    <li><strong>Sinergia del Ecosistema:</strong> SAP provee el contexto de negocio y el sistema de registro, mientras que Google Cloud proporciona la infraestructura de computación de alto rendimiento y capacidades avanzadas de inteligencia artificial (modelos Gemini Flash).</li>
-                    <li><strong>Servicios Cloud Integrados:</strong> Acceso inmediato a APIs nativas de Google Cloud como Cloud Storage, BigQuery y Vertex AI para extender las capacidades corporativas.</li>
-                    <li><strong>Seguridad y Conectividad:</strong> Integración segura y de alta disponibilidad entre SAP y Google Cloud implementada mediante estándares corporativos de comunicación.</li>
+                    <li><strong>Sinergia y Agilidad del Negocio:</strong> SAP actúa como el cerebro de nuestro negocio y sistema de registro, mientras que la Inteligencia Artificial de Google Cloud aporta agilidad, automatización e información analítica en tiempo real para optimizar la toma de decisiones estratégicas.</li>
+                    <li><strong>Plataforma de Innovación Continua:</strong> Habilitamos una infraestructura en la nube que nos permite adoptar rápidamente herramientas inteligentes para mejorar la eficiencia operativa en todas nuestras plantas.</li>
+                    <li><strong>Seguridad y Robustez Empresarial:</strong> Toda la comunicación entre nuestros sistemas de gestión y la nube se realiza bajo los máximos estándares de seguridad y alta disponibilidad exigidos a nivel corporativo, garantizando la continuidad de nuestras operaciones.</li>
                 </ul>
             </div>
 
-            <p style="font-style: italic; color: #555555; text-align: center;">"La integración de Vertex AI y el SDK de ABAP permite automatizar tareas complejas de negocio reduciendo drásticamente los tiempos de procesamiento a décimas de segundo."</p>
+            <p style="font-style: italic; color: #555555; text-align: center;">"La integración de la Inteligencia Artificial y la plataforma de conectores SAP permite automatizar tareas de alta complejidad de negocio reduciendo drásticamente los tiempos de procesamiento a décimas de segundo."</p>
         </div>
 
 <!-- TAB 2: CONTENT SERVER -->
@@ -385,14 +385,14 @@
                 <span>📂 GOOGLE CLOUD STORAGE CONTENT SERVER</span>
                 <span class="badge">Almacenamiento Infinito</span>
             </h2>
-            <p>Se acabó pagar cuotas millonarias por almacenar PDFs pesados de facturas y albaranes en la base de datos de SAP. Al migrar a <strong>Google Cloud Storage (GCS)</strong> como nuestro Content Repository principal, ganamos escalabilidad elástica y abaratamos costes a niveles ridículos.</p>
+            <p>Hemos eliminado la necesidad de almacenar documentos y PDFs pesados en las costosas bases de datos principales de SAP. Al migrar a <strong>Google Cloud Storage (GCS)</strong>, obtenemos un almacenamiento seguro, elástico e infinito para todos los albaranes y facturas de la compañía, reduciendo los costes de almacenamiento drásticamente.</p>
 
             <div class="highlight-box">
                 <h4>¿Qué ganamos con el nuevo Content Server en GCS?</h4>
                 <ul class="custom-bullets">
-                    <li><strong>Ahorro del 95%</strong> en costes de almacenamiento de base de datos SAP.</li>
-                    <li><strong>Alta Disponibilidad:</strong> Los documentos están disponibles 24/7 de forma redundante.</li>
-                    <li><strong>Acceso Seguro y Controlado:</strong> El visor de documentos no accede directamente a la URL nativa de Google, sino que pasa por un proxy federado en nuestro API Hub que valida el acceso de forma segura.</li>
+                    <li><strong>Reducción del 95% en Costes:</strong> Ahorro masivo en costes de infraestructura y almacenamiento dentro de SAP.</li>
+                    <li><strong>Acceso Inmediato e Ininterrumpido:</strong> Toda la documentación histórica de albaranes, facturas y pedidos está disponible 24/7 de forma redundante y rápida.</li>
+                    <li><strong>Cumplimiento de Seguridad y RGPD:</strong> El visor de documentos valida los permisos de acceso de cada usuario de forma segura y automática antes de mostrar la información, garantizando la absoluta privacidad de los datos.</li>
                 </ul>
                 <div style="text-align: center;">
                     <a href="https://docs.cloud.google.com/sap/docs/abap-sdk/on-premises-or-any-cloud/latest/implement-gcs-sap-content-repository" target="_blank" class="tech-link">Ver Documentación Oficial SDK ABAP 🔗</a>
@@ -408,7 +408,7 @@
                 <span>🔍 GESTIÓN DOCUMENTAL E INGESTIÓN AUTOMATIZADA</span>
                 <span class="badge">Procesamiento Eficiente</span>
             </h2>
-            <p>Para optimizar la gestión de la documentación en SAP, hemos unificado el procesamiento documental automatizado y la exploración visual. A través de la herramienta <strong>zarchivelink_export</strong> (GOS-Buster) y nuestro motor de ingesta, los usuarios pueden automatizar la clasificación y visualizar documentos de forma inmediata en SAP.</p>
+            <p>Hemos transformado por completo la forma en que gestionamos la documentación. Con nuestro nuevo motor de <strong>Ingestión Inteligente</strong> y el visualizador integrado en SAP, los albaranes, facturas y contratos de clientes se clasifican y enlazan automáticamente, quedando disponibles para su consulta visual directa desde cualquier pantalla o transacción estándar de SAP de manera inmediata y fluida.</p>
 
             <div class="grid-2">
                 <div class="image-card">
@@ -442,7 +442,7 @@
                         C -->|No| D["⚠️ Bandeja de Errores SAP"]
                         C -->|Sí| E["☁️ Almacenamiento GCS"]
                         
-                        E -->|2. Identificador Único| F("⚡ GOS-Buster / zarchivelink_export")
+                        E -->|2. Identificador Único| F("⚡ GOS-Buster / Enlazador Automatizado")
                         F -->|3. Actualización de Enlaces| G[("🗄️ Tablas SAP: TOA01/GOS")]
                         G -->|4. Visualización| H["🖥️ Transacciones Estándar SAP"]
                 </div>
@@ -452,10 +452,10 @@
         <!-- TAB 4: PEDIDOS IA -->
         <div id="tab-pedidos-ia" class="tab-content">
             <h2>
-                <span>🤖 AUTOMATIZACIÓN DE PEDIDOS: PEDIDOS_IA (BUS2032)</span>
+                <span>🤖 AUTOMATIZACIÓN DE PEDIDOS CON INTELIGENCIA ARTIFICIAL (IA)</span>
                 <span class="badge">Inteligencia Artificial</span>
             </h2>
-            <p>La automatización va un paso más allá del simple archivo documental. El flujo <strong>Pedidos_IA (BUS2032)</strong> procesa los PDFs de pedidos de venta enviados por los clientes, realiza una extracción estructurada con los modelos de inteligencia artificial de Gemini Flash y genera automáticamente el pedido correspondiente en SAP. Esto elimina la necesidad de transcripción manual y previene errores operativos.</p>
+            <p>La automatización mediante IA revoluciona la recepción de pedidos de nuestros clientes. El sistema inteligente <strong>Pedidos_IA</strong> procesa de forma inmediata los PDFs de pedidos de venta enviados por los clientes, realiza una extracción de datos ultra-precisa utilizando los modelos de inteligencia artificial de Google (Gemini) y genera automáticamente el pedido correspondiente en SAP. Esto elimina por completo el tiempo de transcripción manual, previene errores operativos, acelera la facturación y mejora drásticamente el servicio al cliente.</p>
 
             <div class="grid-2">
                 <div class="image-card">
@@ -472,7 +472,7 @@
                 <h4>🚀 Capacidades de Pedidos_IA:</h4>
                 <ul class="custom-bullets">
                     <li><strong>Diccionario de Correspondencias Inteligente:</strong> Si un usuario corrige o sobrescribe algún campo propuesto por el modelo de IA, este cambio se almacena en un diccionario persistente para que en el futuro se traduzca de forma idéntica de manera automática.</li>
-                    <li><strong>Validación de Datos:</strong> El sistema comprueba automáticamente existencias, precios y clientes antes de enviar el payload definitivo de creación de pedidos de venta (BUS2032) a SAP.</li>
+                    <li><strong>Validación Automática de Datos:</strong> El sistema comprueba automáticamente existencias, tarifas de precios y datos de clientes antes de registrar de forma definitiva el pedido de venta en SAP.</li>
                 </ul>
             </div>
         </div>
@@ -483,15 +483,15 @@
                 <span>🚚 CUBICADOR DE CAMIONES TÁCTICO</span>
                 <span class="badge">Optimización Física</span>
             </h2>
-            <p>Para optimizar la carga física en las plantas que no disponen de un sistema TMS completo, como <strong>Pacs</strong> y <strong>Rambleños</strong>, se ha implementado la aplicación móvil del Cubicador de Camiones. Esto asiste directamente a los operarios del muelle en la organización y optimización física del espacio del camión.</p>
+            <p>Para maximizar la rentabilidad de nuestro transporte de mercancías en las plantas que no disponen de un sistema TMS completo, como <strong>Pacs</strong> y <strong>Rambleños</strong>, se ha implementado el Cubicador de Camiones. Esta solución móvil asiste de forma intuitiva a los operarios del muelle para organizar la mercancía dentro del camión y rellenar al máximo su espacio físico.</p>
 
             <div class="grid-2">
                 <div>
                     <h3>Optimización en el Muelle de Carga</h3>
                     <p>Esta aplicación, integrada en las PDAs de los operarios de almacén y pantallas de planificación, asiste visualmente en el proceso de optimización física de la carga del camión.</p>
                     <ul class="custom-bullets">
-                        <li><strong>Cálculo Dinámico de Cubicaje (Implementado):</strong> Determina el volumen y peso ocupado en tiempo real según los palets seleccionados, asegurando que se aproveche al máximo la capacidad del transporte.</li>
-                        <li><strong>Despliegue Instantáneo en PDA (Implementado):</strong> Optimizado para terminales de radiofrecuencia de los operarios para agilizar el trabajo en el muelle de carga.</li>
+                        <li><strong>Maximización del Volumen de Transporte (Implementado):</strong> Determina el peso y volumen óptimo que ocuparán los palets seleccionados, asegurando que se aproveche al máximo la capacidad del transporte y reduciendo nuestros costes de fletes globales.</li>
+                        <li><strong>Operaciones de Almacén más Ágiles (Implementado):</strong> Totalmente adaptado para su uso en las pantallas móviles de los operarios del muelle de carga, agilizando el proceso de expedición y reduciendo el tiempo de espera de los transportistas.</li>
                     </ul>
                 </div>
                 <div class="image-card">
@@ -515,12 +515,12 @@
                 <span>💬 ASISTENTE INTELIGENTE RAG (CHATBOT)</span>
                 <span class="badge">Próximo Lanzamiento</span>
             </h2>
-            <p>Actualmente nos encontramos trabajando en el diseño de un chatbot inteligente basado en arquitectura RAG (Retrieval-Augmented Generation) enfocado inicialmente en la planta de <strong>Rambleños</strong>. Este asistente permitirá a los usuarios realizar consultas en tiempo real sobre los datos del proyecto de forma conversacional y ágil. Si los resultados de esta fase piloto son satisfactorios, la funcionalidad se extenderá a todas las plantas del grupo (FullSAP).</p>
+            <p>Actualmente estamos diseñando un <strong>Asistente de Consulta Conversacional Inteligente</strong> (Chatbot) enfocado inicialmente en la planta de <strong>Rambleños</strong>. Este copiloto virtual permitirá a nuestros directores y gestores realizar preguntas en lenguaje natural sobre datos de negocio o estados de proyecto y obtener respuestas inmediatas, sin necesidad de navegar por pantallas complejas de SAP. Una vez probado con éxito, se expandirá a todo el grupo (FullSAP).</p>
 
             <div class="highlight-box">
                 <h4>Beneficios Esperados:</h4>
                 <ul class="custom-bullets">
-                    <li><strong>Acceso en Tiempo Real:</strong> Respuestas precisas sobre el estado del proyecto y métricas clave extraídas de la documentación y bases de datos integradas.</li>
+                    <li><strong>Respuestas de Negocio en Segundos:</strong> Acceso directo a métricas clave, estado de pedidos y plazos de entrega simplemente escribiendo una pregunta en un chat, agilizando el control del negocio.</li>
                     <li><strong>Piloto en Rambleños:</strong> Enfoque controlado para validar la precisión y experiencia de usuario antes de un despliegue masivo en el grupo.</li>
                 </ul>
             </div>
