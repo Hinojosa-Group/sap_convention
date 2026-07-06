@@ -374,33 +374,73 @@
                 </ul>
             </div>
 
-            <!-- Mermaid Architecture Diagram -->
-            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 25px 0; text-align: center;">
-                <h4 style="color: var(--primary-green); text-transform: uppercase; margin-top: 0; margin-bottom: 15px;">🔍 Arquitectura de Integración Ecosistema Hinojosa</h4>
-                <div class="mermaid" style="display: inline-block; width: 100%;">
-                graph LR
-                    subgraph SAP_RISE ["SAP S4 - Dueño de los procesos de negocio"]
-                        SAP["🗄️ Registro de Datos & Procesos"]
-                        Proc["📄 Pedidos, Albaranes, Facturas"]
-                        SAP --- Proc
-                    end
+            <!-- CSS/HTML Architecture Diagram -->
+            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 25px; margin: 25px 0; text-align: center;">
+                <h4 style="color: var(--primary-green); text-transform: uppercase; margin-top: 0; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px;">🔍 Arquitectura de Integración Ecosistema Hinojosa</h4>
+                <div style="display: flex; justify-content: space-between; gap: 15px; align-items: stretch; flex-wrap: wrap;">
+                    
+                    <!-- Left Column: SAP S4 -->
+                    <div style="flex: 1; min-width: 260px; border: 4px solid var(--primary-green); background: #F4F6F4; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-weight: 800; color: var(--primary-green); text-transform: uppercase; border-bottom: 2px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 5px; font-size: 0.95rem;">
+                            SAP S4 - Dueño de los procesos de negocio
+                        </div>
+                        <div style="background: white; border: 2px solid var(--primary-green); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>🗄️ Registro de Datos & Procesos:</strong> Núcleo transaccional central del grupo.
+                        </div>
+                        <div style="background: white; border: 2px solid var(--primary-green); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>📄 Documentos Clave:</strong>
+                            <ul style="margin: 5px 0 0 15px; padding: 0; list-style-type: square;">
+                                <li>Pedidos de Clientes</li>
+                                <li>Albaranes de Entrega</li>
+                                <li>Facturas y Finanzas</li>
+                            </ul>
+                        </div>
+                    </div>
 
-                    subgraph BTP ["Sap BTP - extensión de sap"]
-                        IS["⚡ Integration Suite<br/>(Comunicaciones)"]
-                        B2B["🌐 Aplicaciones B2B"]
-                        Con["🔒 Conexión Segura y<br/>Exposición de Aplicaciones"]
-                        IS --- B2B
-                        IS --- Con
-                    end
+                    <!-- Flow Arrow 1 -->
+                    <div style="display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent-gold); font-weight: bold; min-width: 30px;">
+                        ⇄
+                    </div>
 
-                    subgraph GCP ["Google Cloud"]
-                        IA["🧠 Cerebro IA (Gemini)"]
-                        GCS["💪 Músculo: Cómputo y GCS"]
-                    end
+                    <!-- Middle Column: SAP BTP -->
+                    <div style="flex: 1; min-width: 260px; border: 4px solid var(--accent-gold); background: #FFFDF9; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-weight: 800; color: var(--accent-gold); text-transform: uppercase; border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px; margin-bottom: 5px; font-size: 0.95rem;">
+                            Sap BTP - extensión de sap
+                        </div>
+                        <div style="background: white; border: 2px solid var(--accent-gold); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>⚡ Integration Suite:</strong> Comunicaciones y mensajería en tiempo real.
+                        </div>
+                        <div style="background: white; border: 2px solid var(--accent-gold); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>🌐 Aplicaciones B2B:</strong> Portales externos y conectores de negocio.
+                        </div>
+                        <div style="background: white; border: 2px solid var(--accent-gold); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>🔒 Conexión Segura:</strong> Exposición de APIs y túnel seguro con On-Premise.
+                        </div>
+                    </div>
 
-                    SAP === IS
-                    IS === IA
-                    IS === GCS
+                    <!-- Flow Arrow 2 -->
+                    <div style="display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent-gold); font-weight: bold; min-width: 30px;">
+                        ⇄
+                    </div>
+
+                    <!-- Right Column: Google Cloud -->
+                    <div style="flex: 1; min-width: 260px; border: 4px solid var(--primary-green); background: #F4F6F4; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="font-weight: 800; color: var(--primary-green); text-transform: uppercase; border-bottom: 2px solid var(--primary-green); padding-bottom: 5px; margin-bottom: 5px; font-size: 0.95rem;">
+                            Google Cloud
+                        </div>
+                        <div style="background: white; border: 2px solid var(--primary-green); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>🧠 Cerebro IA (Gemini):</strong> Modelos de lenguaje avanzados para análisis y extracción de datos.
+                        </div>
+                        <div style="background: white; border: 2px solid var(--primary-green); padding: 10px; font-size: 0.9rem; flex-grow: 1;">
+                            <strong>💪 Músculo de Servicios:</strong>
+                            <ul style="margin: 5px 0 0 15px; padding: 0; list-style-type: square;">
+                                <li>Google Cloud Storage (GCS)</li>
+                                <li>Servicios de Cómputo Elástico</li>
+                                <li>Análisis de Big Data</li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
