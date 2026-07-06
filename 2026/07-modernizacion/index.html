@@ -379,13 +379,13 @@
                 <h4 style="color: var(--primary-green); text-transform: uppercase; margin-top: 0; margin-bottom: 15px;">🔍 Arquitectura de Integración Ecosistema Hinojosa</h4>
                 <div class="mermaid" style="display: inline-block; width: 100%;">
                 graph LR
-                    subgraph SAP_RISE ["SAP RISE (Izquierda)"]
+                    subgraph SAP_RISE ["SAP S4 - Dueño de los procesos de negocio"]
                         SAP["🗄️ Registro de Datos & Procesos"]
                         Proc["📄 Pedidos, Albaranes, Facturas"]
                         SAP --- Proc
                     end
 
-                    subgraph BTP ["SAP BTP (Centro)"]
+                    subgraph BTP ["Sap BTP - extensión de sap"]
                         IS["⚡ Integration Suite<br/>(Comunicaciones)"]
                         B2B["🌐 Aplicaciones B2B"]
                         Con["🔒 Conexión Segura y<br/>Exposición de Aplicaciones"]
@@ -393,7 +393,7 @@
                         IS --- Con
                     end
 
-                    subgraph GCP ["Google Cloud (Derecha)"]
+                    subgraph GCP ["Google Cloud"]
                         IA["🧠 Cerebro IA (Gemini)"]
                         GCS["💪 Músculo: Cómputo y GCS"]
                     end
@@ -451,23 +451,6 @@
                 </ul>
             </div>
 
-            <h3>ANEXO: FLUJO DE INGESTIÓN Y ENLACE GOS-BUSTER</h3>
-            <p>El procesamiento automático de documentos entrantes y su posterior vinculación y accesibilidad directa desde las transacciones de SAP sigue un flujo desacoplado y de alto rendimiento:</p>
-
-            <!-- Mermaid Flowchart Diagram -->
-            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 20px 0;">
-                <div class="mermaid">
-                    graph TD
-                        A["📄 Entrada de Documentos"] -->|PDFs / Escaneos| B("⚙️ Motor de Ingestión")
-                        B -->|1. Clasificación| C{"¿Es Válido?"}
-                        C -->|No| D["⚠️ Bandeja de Errores SAP"]
-                        C -->|Sí| E["☁️ Almacenamiento GCS"]
-                        
-                        E -->|2. Identificador Único| F("⚡ GOS-Buster / Enlazador Automatizado")
-                        F -->|3. Actualización de Enlaces| G[("🗄️ Tablas SAP: TOA01/GOS")]
-                        G -->|4. Visualización| H["🖥️ Transacciones Estándar SAP"]
-                </div>
-            </div>
         </div>
 
         <!-- TAB 4: PEDIDOS IA -->
