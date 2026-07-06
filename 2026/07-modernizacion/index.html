@@ -351,7 +351,6 @@
                 <!-- Navigation Tabs -->
         <div class="tabs-container">
             <button class="tab-btn active" onclick="openTab(event, 'tab-plataforma')">🚀 Plataforma</button>
-            <button class="tab-btn" onclick="openTab(event, 'tab-content')">📂 Content Server</button>
             <button class="tab-btn" onclick="openTab(event, 'tab-ingestion-gos')">🔍 Ingestión y GOS-Buster</button>
             <button class="tab-btn" onclick="openTab(event, 'tab-pedidos-ia')">🤖 Pedidos IA</button>
             <button class="tab-btn" onclick="openTab(event, 'tab-cubicador')">🚚 Cubicador PDA</button>
@@ -361,45 +360,51 @@
         <!-- TAB 1: PLATAFORMA -->
         <div id="tab-plataforma" class="tab-content active">
             <h2>
-                <span>🚀 PLATAFORMA DE INTEGRACIÓN SAP + GOOGLE CLOUD</span>
+                <span>🚀 PLATAFORMA DE INTEGRACIÓN SAP + GOOGLE CLOUD + BTP</span>
                 <span class="badge">Plataforma Cloud</span>
             </h2>
-            <p>Arquitectura técnica para comunicar nuestros sistemas SAP locales con los servicios e infraestructura en la nube de Google de forma directa, ágil y centralizada.</p>
+            <p>Hemos construido una plataforma que convierte SAP en una base para crear nuevas soluciones de negocio de forma rápida, segura y escalable.</p>
             
             <div class="highlight-box">
                 <h4>Estructura de la plataforma de integración</h4>
-                <p>Nuestra infraestructura habilita un abanico de posibilidades avanzadas de integración:</p>
                 <ul class="custom-bullets">
-                    <li><strong>Conexión de Sistemas:</strong> SAP actúa como el sistema principal de registro de datos de la compañía, mientras que la infraestructura de Google Cloud permite procesar información y automatizar tareas operativas de forma escalable.</li>
-                    <li><strong>Extensibilidad de Funciones:</strong> Permite utilizar APIs nativas de Google Cloud para añadir de forma ágil nuevas utilidades y herramientas directamente en nuestros flujos de SAP.</li>
-                    <li><strong>Seguridad de la Información:</strong> Toda la comunicación entre los servidores locales de Hinojosa y la nube de Google se realiza de manera cifrada bajo estándares de alta disponibilidad y conectividad segura.</li>
+                    <li><strong>SAP RISE:</strong> Principal registro de datos y define procesos de negocio (pedidos, albaranes, facturas, etc.).</li>
+                    <li><strong>Google Cloud:</strong> Extensibilidad de funciones y cerebro IA, potenciando la automatización inteligente.</li>
+                    <li><strong>BTP (SAP Business Technology Platform):</strong> Conexión segura entre sistemas y exposición de aplicaciones para una integración fluida.</li>
                 </ul>
             </div>
 
-            <p style="font-style: italic; color: #555555; text-align: center;">"La integración técnica mediante conectores estándar permite comunicar de forma directa los sistemas SAP con servicios en la nube en milisegundos de forma transparente para el usuario."</p>
-        </div>
+            <!-- Mermaid Architecture Diagram -->
+            <div style="background-color: #FAFAFA; border: 1px solid #D0D0D0; padding: 20px; margin: 25px 0; text-align: center;">
+                <h4 style="color: var(--primary-green); text-transform: uppercase; margin-top: 0; margin-bottom: 15px;">🔍 Arquitectura de Integración Ecosistema Hinojosa</h4>
+                <div class="mermaid" style="display: inline-block; width: 100%;">
+                graph LR
+                    subgraph SAP_RISE ["SAP RISE (Izquierda)"]
+                        SAP["🗄️ Registro de Datos & Procesos"]
+                        Proc["📄 Pedidos, Albaranes, Facturas"]
+                        SAP --- Proc
+                    end
 
-<!-- TAB 2: CONTENT SERVER -->
-        <div id="tab-content" class="tab-content">
-            <h2>
-                <span>📂 REPOSITORIO DE DOCUMENTOS EN GOOGLE CLOUD STORAGE (GCS)</span>
-                <span class="badge">Almacenamiento Infinito</span>
-            </h2>
-            <p>Implementación de un repositorio de contenido externo en Google Cloud Storage (GCS) para almacenar los archivos PDF de facturas, albaranes y documentación de clientes fuera de la base de datos principal de SAP, optimizando el tamaño y rendimiento del sistema.</p>
+                    subgraph BTP ["SAP BTP (Centro)"]
+                        IS["⚡ Integration Suite<br/>(Comunicaciones)"]
+                        B2B["🌐 Aplicaciones B2B"]
+                        Con["🔒 Conexión Segura y<br/>Exposición de Aplicaciones"]
+                        IS --- B2B
+                        IS --- Con
+                    end
 
-            <div class="highlight-box">
-                <h4>Detalle y características de la solución de almacenamiento:</h4>
-                <ul class="custom-bullets">
-                    <li><strong>Optimización del Espacio en SAP:</strong> Desvía el almacenamiento de documentos adjuntos fuera de la base de datos de SAP, evitando el crecimiento excesivo y la ralentización del sistema de gestión.</li>
-                    <li><strong>Disponibilidad Constante:</strong> Los albaranes y facturas de clientes quedan almacenados con el esquema de redundancia de Google Cloud y son accesibles en todo momento de manera directa.</li>
-                    <li><strong>Seguridad y Control de Accesos:</strong> La visualización de los archivos almacenados requiere de una validación de permisos de usuario a través de un proxy corporativo (API Hub) antes de mostrar la información en SAP.</li>
-                </ul>
-                <div style="text-align: center;">
-                    <a href="https://docs.cloud.google.com/sap/docs/abap-sdk/on-premises-or-any-cloud/latest/implement-gcs-sap-content-repository" target="_blank" class="tech-link">Ver Documentación Oficial SDK ABAP 🔗</a>
+                    subgraph GCP ["Google Cloud (Derecha)"]
+                        IA["🧠 Cerebro IA (Gemini)"]
+                        GCS["💪 Músculo: Cómputo y GCS"]
+                    end
+
+                    SAP === IS
+                    IS === IA
+                    IS === GCS
                 </div>
             </div>
 
-
+            <p style="font-style: italic; color: #555555; text-align: center;">"La integración técnica mediante conectores estándar permite comunicar de forma directa los sistemas SAP con servicios en la nube en milisegundos de forma transparente para el usuario."</p>
         </div>
 
         <!-- TAB 3: INGESTIÓN Y GOS-BUSTER -->
@@ -409,6 +414,22 @@
                 <span class="badge">Procesamiento Eficiente</span>
             </h2>
             <p>Automatización de la ingesta, archivo y enlace de documentos en SAP. A través del visualizador integrado y la utilidad GOS-Buster, los documentos clasificados se asocian de manera automática a sus correspondientes registros de SAP y quedan disponibles para su consulta directa.</p>
+
+            <!-- Antes / Ahora Comparison Card -->
+            <div class="highlight-box" style="background-color: #F4F6F4; border-left: 6px solid var(--accent-gold); margin-bottom: 25px;">
+                <h4 style="color: var(--primary-green); font-size: 1.15rem; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; font-weight: 800;">📋 El papeleo deja de ser trabajo manual</h4>
+                <div style="display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px; background: #ffffff; padding: 15px; border: 1px solid #D0D0D0; border-top: 4px solid #C0392B;">
+                        <strong style="color: #C0392B; text-transform: uppercase; font-weight: 800; font-size: 0.9rem;">Antes</strong>
+                        <p style="margin: 10px 0 0 0; font-size: 0.95rem; color: var(--dark-text);">Los documentos requerían clasificación manual y seguimiento individual.</p>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--accent-gold); font-weight: bold;">→</div>
+                    <div style="flex: 1; min-width: 250px; background: #ffffff; padding: 15px; border: 1px solid #D0D0D0; border-top: 4px solid var(--primary-green);">
+                        <strong style="color: var(--primary-green); text-transform: uppercase; font-weight: 800; font-size: 0.9rem;">Ahora</strong>
+                        <p style="margin: 10px 0 0 0; font-size: 0.95rem; color: var(--dark-text);">La clasificación y el archivo son automáticos, reduciendo tiempos y errores.</p>
+                    </div>
+                </div>
+            </div>
 
             <div class="grid-2">
                 <div class="image-card">
