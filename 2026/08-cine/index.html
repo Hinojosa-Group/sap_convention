@@ -83,6 +83,25 @@
             font-weight: 300;
         }
 
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            background-color: #00FF66;
+            border-radius: 50% !important;
+            display: inline-block;
+        }
+
         /* Pasos numerados */
         .step-container {
             padding: 25px;
@@ -106,7 +125,6 @@
             font-size: 1.2rem;
             display: flex;
             align-items: center;
-            justify-content: justify-content;
             justify-content: center;
             border-radius: 50% !important; /* Círculo perfecto para pasos */
             flex-shrink: 0;
@@ -140,6 +158,7 @@
             cursor: pointer;
             text-align: center;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .user-btn:hover {
@@ -152,6 +171,16 @@
             color: var(--blanco);
             border-color: var(--verde-principal);
             box-shadow: 0 2px 6px rgba(0, 104, 71, 0.3);
+        }
+
+        .user-btn.voted::after {
+            content: " ✓";
+            color: #008800;
+            font-weight: bold;
+        }
+
+        .user-btn.selected.voted::after {
+            color: var(--dorado);
         }
 
         /* Sección de Películas */
@@ -192,17 +221,6 @@
             text-transform: uppercase;
         }
 
-        .session-badge {
-            display: inline-block;
-            background-color: var(--verde-sage);
-            color: var(--verde-principal);
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 3px 8px;
-            margin-bottom: 12px;
-            width: max-content;
-        }
-
         .session-options {
             display: flex;
             flex-direction: column;
@@ -234,13 +252,13 @@
             cursor: pointer;
         }
 
-        /* Botón de Acción */
+        /* Botones de Acción */
         .action-bar {
             padding: 20px 25px;
             background-color: var(--fondo-general);
             border-top: 1px solid #DDD;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: flex-end;
             align-items: center;
             flex-wrap: wrap;
@@ -263,13 +281,13 @@
             background-color: #004d34;
         }
 
-        .btn-reset {
-            background-color: #A00000;
+        .btn-sync {
+            background-color: var(--verde-principal);
             color: var(--blanco);
             border: none;
-            padding: 10px 18px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
             cursor: pointer;
         }
 
@@ -287,6 +305,16 @@
         .btn-copy:hover {
             background-color: var(--dorado-oscuro);
             color: var(--blanco);
+        }
+
+        .btn-reset {
+            background-color: #A00000;
+            color: var(--blanco);
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         /* Tabla de Clasificación Final */
@@ -372,7 +400,7 @@
             h1 { font-size: 1.6rem; }
             .user-grid { grid-template-columns: repeat(2, 1fr); }
             .action-bar { flex-direction: column; align-items: stretch; }
-            .btn-submit, .btn-copy, .btn-reset { width: 100%; text-align: center; }
+            .btn-submit, .btn-copy, .btn-sync, .btn-reset { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -381,9 +409,13 @@
 <div class="container">
     <!-- Header -->
     <header>
-        <div class="header-badge">🍿 Cartelera Kinépolis Valencia (Paterna)</div>
+        <div class="header-badge">🍿 Cartelera Compartida en Tiempo Real</div>
         <h1><span class="title-verde">CINE</span> <span class="title-dorado">KINÉPOLIS</span></h1>
-        <p class="subtitle">Sesiones de 19:00 a 20:00 h • Registro de Preferencias por Persona</p>
+        <p class="subtitle">Sesiones de 19:00 a 20:00 h • Votación Compartida para Todo el Grupo</p>
+        <div class="sync-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="syncText">Sincronizado en tiempo real con la nube</span>
+        </div>
     </header>
 
     <!-- Alerta de Confirmación -->
@@ -395,7 +427,7 @@
             <div class="step-number">1</div>
             <div class="step-title">¿Quién <span>eres?</span></div>
         </div>
-        <p style="margin-bottom: 12px; font-size: 0.95rem; color: #555;">Haz clic en tu nombre para gestionar tu elección de película:</p>
+        <p style="margin-bottom: 12px; font-size: 0.95rem; color: #555;">Haz clic en tu nombre para apuntarte o modificar tu elección:</p>
         <div class="user-grid" id="userGrid"></div>
     </div>
 
@@ -413,15 +445,16 @@
     <!-- Barra de Acciones -->
     <div class="action-bar">
         <button class="btn-submit" id="btnSave" onclick="saveChoice()">✅ Guardar Elección</button>
+        <button class="btn-sync" onclick="fetchCloudVotes()">🔄 Refrescar Votos</button>
         <button class="btn-copy" onclick="copySummaryText()">📋 Copiar Resumen (Chat)</button>
-        <button class="btn-reset" onclick="resetAllVotes()">⚠️ Reiniciar Votación</button>
+        <button class="btn-reset" onclick="resetAllVotes()">⚠️ Limpiar Todo</button>
     </div>
 
     <!-- PASO 3: Resumen y Clasificación Final -->
     <div class="results-section">
         <div class="step-header">
             <div class="step-number">3</div>
-            <div class="step-title">Clasificación <span>y Apuntados</span></div>
+            <div class="step-title">Clasificación <span>y Apuntados (Grupo Completo)</span></div>
         </div>
         
         <table class="results-table">
@@ -504,29 +537,66 @@
     let selectedUser = null;
     let votes = {}; // { "Alfredo": "spiderman_1915_4dx", ... }
 
-    const STORAGE_KEY = "kinepolis_valencia_votes_20260801";
+    // Backend compartido Nube (JSONBlob ID)
+    const CLOUD_BLOB_URL = "https://jsonblob.com/api/jsonBlob/019fbd95-1f95-74b1-92ab-2cf786113ccc";
 
     // Inicialización
     window.addEventListener("DOMContentLoaded", () => {
-        loadVotes();
         renderUserButtons();
         renderMovieCards();
         renderResults();
+        fetchCloudVotes();
+
+        // Auto-refresh cada 4 segundos para mantener sincronizados los teléfonos de todos
+        setInterval(fetchCloudVotes, 4000);
     });
 
-    function loadVotes() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                votes = JSON.parse(saved);
-            } catch(e) {
-                votes = {};
+    async function fetchCloudVotes() {
+        try {
+            const resp = await fetch(CLOUD_BLOB_URL, { cache: "no-store" });
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data && typeof data === 'object') {
+                    votes = data;
+                    localStorage.setItem("kinepolis_votes_backup", JSON.stringify(votes));
+                    updateSyncStatus("🟢 Sincronizado con la nube", "#00FF66");
+                    renderUserButtons();
+                    renderResults();
+                    if (selectedUser) {
+                        const currentVote = votes[selectedUser] || null;
+                        SESSIONS.forEach(sess => {
+                            const radio = document.getElementById(`radio_${sess.id}`);
+                            if (radio) radio.checked = (currentVote === sess.id);
+                        });
+                    }
+                }
             }
+        } catch (e) {
+            updateSyncStatus("🟡 Modo local (sin conexión)", "#FFCC00");
         }
     }
 
-    function saveVotesToStorage() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
+    async function pushCloudVotes() {
+        updateSyncStatus("⏳ Guardando en la nube...", "#00FFFF");
+        try {
+            const resp = await fetch(CLOUD_BLOB_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(votes)
+            });
+            if (resp.ok) {
+                updateSyncStatus("🟢 Guardado y sincronizado con todos", "#00FF66");
+            } else {
+                updateSyncStatus("🔴 Error de guardado", "#FF3333");
+            }
+        } catch (e) {
+            updateSyncStatus("🔴 Error de red al guardar", "#FF3333");
+        }
+    }
+
+    function updateSyncStatus(msg, color) {
+        document.getElementById("syncText").textContent = msg;
+        document.getElementById("statusDot").style.backgroundColor = color;
     }
 
     function renderUserButtons() {
@@ -534,7 +604,8 @@
         grid.innerHTML = "";
         PEOPLE.forEach(person => {
             const btn = document.createElement("button");
-            btn.className = "user-btn" + (selectedUser === person ? " selected" : "");
+            const hasVoted = votes[person] ? " voted" : "";
+            btn.className = "user-btn" + (selectedUser === person ? " selected" : "") + hasVoted;
             btn.textContent = person;
             btn.onclick = () => selectUser(person);
             grid.appendChild(btn);
@@ -607,7 +678,7 @@
         });
     }
 
-    function saveChoice() {
+    async function saveChoice() {
         if (!selectedUser) {
             showAlert("⚠️ Por favor, selecciona primero quién eres en el Paso 1.");
             return;
@@ -621,12 +692,13 @@
 
         const sessionId = selectedRadio.value;
         votes[selectedUser] = sessionId;
-        saveVotesToStorage();
+
+        await pushCloudVotes();
+        renderUserButtons();
+        renderResults();
 
         const sess = SESSIONS.find(s => s.id === sessionId);
-        showAlert(`🎉 ¡Guardado! ${selectedUser} se ha apuntado a ${sess.movie} (${sess.time} h).`);
-
-        renderResults();
+        showAlert(`🎉 ¡Guardado! ${selectedUser} se ha apuntado a ${sess.movie} (${sess.time} h). Sincronizado en el dispositivo de todos.`);
     }
 
     function renderResults() {
@@ -689,16 +761,16 @@
         }
 
         navigator.clipboard.writeText(text).then(() => {
-            showAlert("📋 ¡Resumen copiado al portapapeles! Listo para pegar en WhatsApp/Telegram.");
+            showAlert("📋 ¡Resumen copiado al portapapeles! Listo para pegar en WhatsApp o Telegram.");
         }).catch(err => {
-            showAlert("⚠️ No se pudo copiar automáticamente. Copia el resumen manualmente.");
+            showAlert("⚠️ No se pudo copiar automáticamente.");
         });
     }
 
-    function resetAllVotes() {
-        if (confirm("¿Estás seguro de que deseas reiniciar todos los votos elegidos?")) {
+    async function resetAllVotes() {
+        if (confirm("¿Estás seguro de que deseas reiniciar todos los votos elegidos para TODO el grupo?")) {
             votes = {};
-            localStorage.removeItem(STORAGE_KEY);
+            await pushCloudVotes();
             selectedUser = null;
             document.getElementById("step2Container").style.opacity = "0.6";
             document.getElementById("step2Container").style.pointerEvents = "none";
@@ -706,7 +778,7 @@
             renderUserButtons();
             renderMovieCards();
             renderResults();
-            showAlert("🔄 Votación reiniciada correctamente.");
+            showAlert("🔄 Votación del grupo reiniciada en la nube.");
         }
     }
 
@@ -717,7 +789,7 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
         setTimeout(() => {
             box.style.display = "none";
-        }, 5000);
+        }, 6000);
     }
 </script>
 
